@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TechnoStore Market</string>
+
+    <!--
+        usamos el ID "Web" Se lo pasamos a GoogleSignInOptions para solicitar un `idToken`.
+        Google Play Services firma ese token declarando este ID
+        Luego, cuando enviamos el token a Firebase, Firebase verifica que
+        el token fue emitido específicamente para sus servidores.
+    -->
+    <string name="default_web_client_id">736228670205-qqk8rt3ki2sg4t89qmdhpphutnlie0gg.apps.googleusercontent.com</string>
+</resources>
