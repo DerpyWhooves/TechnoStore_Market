@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -89,107 +92,164 @@ fun LoginScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background // Mantiene el fondo #F8F9FA en modo claro
     ) {
-        Icon(
-            Icons.Filled.Storefront,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        Text("TechnoStore Market", style = MaterialTheme.typography.headlineMedium)
-        Text(
-            if (esLogin) "Inicia sesión para continuar" else "Crea tu cuenta",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(24.dp))
-
-        if (!esLogin) {
-            CampoTexto(
-                valor = nombre,
-                onValorChange = { nombre = it },
-                etiqueta = "Nombre completo",
-                icono = Icons.Filled.Person,
-                error = estado.nombreError
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Icono / Isotipo de la tienda
+            Icon(
+                imageVector = Icons.Filled.Storefront,
+                contentDescription = "Logo TechnoStore Market",
+                modifier = Modifier.size(72.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
-        }
-        CampoTexto(
-            valor = correo,
-            onValorChange = { correo = it },
-            etiqueta = "Correo electrónico",
-            icono = Icons.Filled.Email,
-            keyboardType = KeyboardType.Email,
-            error = estado.emailError
-        )
-        CampoTexto(
-            valor = password,
-            onValorChange = { password = it },
-            etiqueta = "Contraseña",
-            icono = Icons.Filled.Lock,
-            esPassword = true,
-            imeAction = if (esLogin) ImeAction.Done else ImeAction.Next,
-            error = estado.passwordError
-        )
-        if (!esLogin) {
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = "TechnoStore Market",
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = if (esLogin) "Inicia sesión para continuar" else "Crea tu cuenta",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            // Formulario dinámico
+            if (!esLogin) {
+                CampoTexto(
+                    valor = nombre,
+                    onValorChange = { nombre = it },
+                    etiqueta = "Nombre completo",
+                    icono = Icons.Filled.Person,
+                    error = estado.nombreError
+                )
+                Spacer(Modifier.height(12.dp))
+            }
+
             CampoTexto(
-                valor = confirmacion,
-                onValorChange = { confirmacion = it },
-                etiqueta = "Confirmar contraseña",
+                valor = correo,
+                onValorChange = { correo = it },
+                etiqueta = "Correo electrónico",
+                icono = Icons.Filled.Email,
+                keyboardType = KeyboardType.Email,
+                error = estado.emailError
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            CampoTexto(
+                valor = password,
+                onValorChange = { password = it },
+                etiqueta = "Contraseña",
                 icono = Icons.Filled.Lock,
                 esPassword = true,
-                imeAction = ImeAction.Done,
-                error = estado.confirmacionError
+                imeAction = if (esLogin) ImeAction.Done else ImeAction.Next,
+                error = estado.passwordError
             )
-        }
 
-        Spacer(Modifier.height(8.dp))
-        Button(
-            onClick = {
-                if (esLogin) viewModel.iniciarSesion(correo, password)
-                else viewModel.registrar(nombre, correo, password, confirmacion)
-            },
-            enabled = !estado.cargando,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (estado.cargando) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            } else {
-                Text(if (esLogin) "Ingresar" else "Registrarme")
+            if (!esLogin) {
+                Spacer(Modifier.height(12.dp))
+                CampoTexto(
+                    valor = confirmacion,
+                    onValorChange = { confirmacion = it },
+                    etiqueta = "Confirmar contraseña",
+                    icono = Icons.Filled.Lock,
+                    esPassword = true,
+                    imeAction = ImeAction.Done,
+                    error = estado.confirmacionError
+                )
             }
-        }
 
-        Spacer(Modifier.height(12.dp))
-        OutlinedButton(
-            onClick = {
-                // Cerramos la sesión previa de Google para que siempre pida elegir cuenta
-                googleSignInClient.signOut().addOnCompleteListener {
-                    googleLauncher.launch(googleSignInClient.signInIntent)
+            Spacer(Modifier.height(24.dp))
+
+            // Botón Principal con bordes redondeados M3
+            Button(
+                onClick = {
+                    if (esLogin) viewModel.iniciarSesion(correo, password)
+                    else viewModel.registrar(nombre, correo, password, confirmacion)
+                },
+                enabled = !estado.cargando,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+            ) {
+                if (estado.cargando) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.5.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(
+                        text = if (esLogin) "Ingresar" else "Registrarme",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
-            },
-            enabled = !estado.cargando,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Continuar con Google")
-        }
+            }
 
-        Spacer(Modifier.height(8.dp))
-        TextButton(onClick = {
-            esLogin = !esLogin
-            viewModel.reiniciarEstado()
-        }) {
-            Text(if (esLogin) "¿No tienes cuenta? Regístrate" else "¿Ya tienes cuenta? Inicia sesión")
-        }
-        if (esLogin) {
-            TextButton(onClick = { viewModel.recuperarPassword(correo) }, enabled = !estado.cargando) {
-                Text("¿Olvidaste tu contraseña?")
+            Spacer(Modifier.height(12.dp))
+
+            // Botón de Google con bordes redondeados M3
+            OutlinedButton(
+                onClick = {
+                    googleSignInClient.signOut().addOnCompleteListener {
+                        googleLauncher.launch(googleSignInClient.signInIntent)
+                    }
+                },
+                enabled = !estado.cargando,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+            ) {
+                Text(
+                    text = "Continuar con Google",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Transición entre Login y Registro
+            TextButton(onClick = {
+                esLogin = !esLogin
+                viewModel.reiniciarEstado()
+            }) {
+                Text(
+                    text = if (esLogin) "¿No tienes cuenta? Regístrate aquí" else "¿Ya tienes cuenta? Inicia sesión",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (esLogin) {
+                TextButton(
+                    onClick = { viewModel.recuperarPassword(correo) },
+                    enabled = !estado.cargando
+                ) {
+                    Text(
+                        text = "¿Olvidaste tu contraseña?",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
         }
     }
